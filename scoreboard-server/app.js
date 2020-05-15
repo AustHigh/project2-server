@@ -14,12 +14,12 @@ connection.connect();
 function rowToObject(row) {
 	return {
 		name: row.name,
-		time: row.time,
+		moves: row.moves,
 	};
 }
 
 app.get('/scoreboard', (request, response) => {
-	const query = 'SELECT name, time, id FROM score WHERE is_deleted = 0 ORDER BY time DESC';
+	const query = 'SELECT name, moves, id FROM score WHERE is_deleted = 0 ORDER BY moves ASC';
 	const params =[];
 	connection.query(query, params, (error, rows) => {
 		response.send({
@@ -30,7 +30,7 @@ app.get('/scoreboard', (request, response) => {
 });
 
 app.get('/scoreboard/:name/', (request, response) => {
-	const query = 'SELECT name, time, id FROM score WHERE is_deleted = 0 AND name = ? ORDER BY time DESC';
+	const query = 'SELECT name, moves, id FROM score WHERE is_deleted = 0 AND name = ? ORDER BY moves ASC';
 	const params = [request.params.name];
 	connection.query(query, params, (error, rows) => {
 		response.send({
@@ -41,38 +41,25 @@ app.get('/scoreboard/:name/', (request, response) => {
 });
 
 app.post('/scoreboard', (request, response) => {
-	const query = 'INSERT INTO score(name, time) VALUES (?, ?)';
-	const params = [request.body.name, request.body.time];
+	const query = 'INSERT INTO score(name, moves) VALUES (?, ?)';
+	const params = [request.body.name, request.body.moves];
 	connection.query(query, params, (error, result) => {
 		response.send({
 			ok: true,
 			id: result.insertId,
 		});
-	});
-});
-
-app.patch('/scoreboard/:id', (request, response) => {
-	const query = 'UPDATE score SET name = ?, time = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
-	const params = [request.body.name, request.body.time, request.params.id];
-	connection.query(query, params, (error, result) => {
-		response.send({
-			ok: true,
-		});
-	});
-});
-
-app.delete('/scoreboard/:id', (request, response) => {
-	const query = 'UPDATE score SET is_deleted = 1, updated_at CURRENT_TIMESTAMP WHERE id = ?';
-	const params = [request.params.id];
-	connection.query(query, params, (error, result) => {
-		response.send({
-			ok: true,
-		});
+		console.log(error);
 	});
 });
 
 
-const port = 5443;
+
+
+
+
+
+
+const port = 6443;
 app.listen(port, () => {
 	console.log(`We're live on port ${port}!`);
 });
