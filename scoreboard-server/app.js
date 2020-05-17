@@ -13,6 +13,7 @@ connection.connect();
 
 function rowToObject(row) {
 	return {
+		id: row.id,
 		name: row.name,
 		moves: row.moves,
 	};
@@ -52,7 +53,15 @@ app.post('/scoreboard', (request, response) => {
 	});
 });
 
-
+app.patch('/scoreboard/:id', (request, response) => {
+	const query = 'UPDATE score SET name = ?, moves = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+	const params = [request.body.name, request.body.moves, request.params.id];
+	connection.query(query, params, (error, result) => {
+		response.send({
+			ok: true,
+		});
+	});
+});
 
 
 
